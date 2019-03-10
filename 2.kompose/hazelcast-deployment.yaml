@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../1.docker/docker-compose.yml
+    kompose.version: 1.18.0 (06a2e56)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: hazelcast
+  name: hazelcast
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: hazelcast
+    spec:
+      containers:
+      - image: hazelcast/hazelcast:3.11.2
+        name: hazelcast
+        resources: {}
+      restartPolicy: Always
+status: {}

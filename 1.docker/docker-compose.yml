@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  cms:
+    image: buluba89/cms
+    restart: always
+    environment:
+      JAVA_EXTRA_ARGS: "-Dspring.profiles.active=production,docker -Dhazelcast.config.client.enabled=true -Dhazelcast.config.client.address=hazelcast"
+      SASTIX_CMS_VOLUME: /opt/sastixcms
+      SASTIX_CMS_MYSQL_URL: jdbc:mysql://db:3306/sastix_cms_docker
+      SASTIX_CMS_MYSQL_USERNAME: sastixcms
+      SASTIX_CMS_MYSQL_PASSWORD: sastixcms
+    volumes:
+      - cms-data:/opt/sastixcms
+    depends_on:
+      - db
+      - hazelcast
+
+  db:
+    image: mariadb:10
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sastixcms
+      MYSQL_PASSWORD: sastixcms
+      MYSQL_USER: sastixcms
+    volumes:
+      - db-data:/var/lib/mysql
+      - ${PWD}/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  hazelcast:
+    image: hazelcast/hazelcast:3.11.2
+
+#  adminer:
+#    image: adminer
+#    restart: always
+
+volumes:
+  cms-data:
+  db-data:
+

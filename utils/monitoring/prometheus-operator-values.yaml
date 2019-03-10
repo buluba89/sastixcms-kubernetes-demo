@@ -1,0 +1,10 @@
+alertmanager:
+  enabled: false
+
+grafana:
+  persistence:
+    enabled: true
+    initChownData: true
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi

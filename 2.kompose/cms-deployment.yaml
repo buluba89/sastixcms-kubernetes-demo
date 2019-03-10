@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../1.docker/docker-compose.yml
+    kompose.version: 1.18.0 (06a2e56)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cms
+  name: cms
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: cms
+    spec:
+      containers:
+      - env:
+        - name: JAVA_EXTRA_ARGS
+          value: -Dspring.profiles.active=production,docker -Dhazelcast.config.client.enabled=true
+            -Dhazelcast.config.client.address=hazelcast
+        - name: SASTIX_CMS_MYSQL_PASSWORD
+          value: sastixcms
+        - name: SASTIX_CMS_MYSQL_URL
+          value: jdbc:mysql://db:3306/sastix_cms_docker
+        - name: SASTIX_CMS_MYSQL_USERNAME
+          value: sastixcms
+        - name: SASTIX_CMS_VOLUME
+          value: /opt/sastixcms
+        image: buluba89/cms
+        name: cms
+        resources: {}
+        volumeMounts:
+        - mountPath: /opt/sastixcms
+          name: cms-data
+      restartPolicy: Always
+      volumes:
+      - name: cms-data
+        persistentVolumeClaim:
+          claimName: cms-data
+status: {}

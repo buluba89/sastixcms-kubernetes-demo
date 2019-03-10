@@ -1,0 +1,14 @@
+storage:
+  storageClassName: efs
+
+mariadb:
+  master:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: alpha.eksctl.io/nodegroup-name
+                  operator: In
+                  values:
+                    - ng1-persistence

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: db
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_PASSWORD
+          value: sastixcms
+        - name: MYSQL_ROOT_PASSWORD
+          value: sastixcms
+        - name: MYSQL_USER
+          value: sastixcms
+        image: sastix/cmsmariadb:1.0
+        name: db
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: db-init
+          mountPath: /docker-entrypoint-initdb.d
+        - name: db-data
+          mountPath: /var/lib/mysql
+      restartPolicy: Always
+
+      volumes:
+      - name: db-init
+        configMap:
+          name: db-init
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: db-data

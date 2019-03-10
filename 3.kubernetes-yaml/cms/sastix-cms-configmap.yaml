@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  application-kubernetes.properties: |-
+    spring.profiles.include=default,env
+    hazelcast.config.management.enabled=true
+    hazelcast.config.management.url=http://management-center:8080/hazelcast-mancenter/
+    hazelcast.config.client.enabled=true
+    hazelcast.config.network.multicast.enabled=false
+    hazelcast.config.network.kubernetes.enabled=true
+    hazelcast.config.network.kubernetes.namespace=default
+    hazelcast.config.network.kubernetes.service.name=hazelcast
+
+kind: ConfigMap
+metadata:
+  name: sastix-cms-config
+  labels:
+    component: stastix-cms-app

@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  application-kubernetes.properties: |-
+    spring.profiles.include=default,env
+    # Hazelcast config
+    hazelcast.config.management.enabled=true
+    hazelcast.config.management.url=http://{{ $.Release.Name }}-management-center:8080/hazelcast-mancenter/
+    hazelcast.config.client.enabled=true
+    hazelcast.config.network.multicast.enabled=false
+    hazelcast.config.network.kubernetes.enabled=true
+    hazelcast.config.network.kubernetes.namespace={{ $.Release.Namespace }}
+    hazelcast.config.network.kubernetes.service.name={{ $.Release.Name }}-hazelcast
+    # Security config
+    security.user.name=${SASTIX_CMS_ADMIN_USER}
+    security.user.password=${SASTIX_CMS_ADMIN_PASSWORD}
+    # Prometheus actuator
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=prometheus
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+kind: ConfigMap
+metadata:
+  name: {{ template "sastix-cms.fullname" . }}-config
+  labels:
+    app: {{ template "sastix-cms.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{ if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+{{ end }}

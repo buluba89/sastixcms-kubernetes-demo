@@ -1,0 +1,65 @@
+image:
+  registry: buluba89
+  name: cms
+  tag: latest
+
+labels:
+  component: sastix-cms-app
+  role: hazelcast
+
+storage:
+  size: 500Mi
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "500m"
+  limits:
+    memory: "1024Mi"
+    cpu: "2000m"
+
+ingress:
+  enabled: true
+  host: "cms.sastix.com"
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+
+  targetCpuUtilization: 100
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name:
+
+# ------------ Dependencies configuration -------------
+
+# See https://github.com/helm/charts/tree/master/stable/mariadb for more info
+mariadb:
+  rootUser:
+    password: sastixcms
+    forcePassword: true
+  db:
+    user: sastixcms
+    password: sastixcms
+    forcePassword: true
+  replication:
+    enabled: false
+  initdbScripts:
+    lykio_init.sql: |-
+      CREATE DATABASE `sastix_cms_docker` /*!40100 DEFAULT CHARACTER SET utf8 */;
+      GRANT ALL PRIVILEGES ON *.* TO 'sastixcms'@'%';
+
+# See https://github.com/helm/charts/tree/master/stable/hazelcast for more info
+hazelcast:
+  image:
+    tag: "3.11.2"
+  cluster:
+    memberCount: 2
+  mancenter:
+    service:
+      type: ClusterIP

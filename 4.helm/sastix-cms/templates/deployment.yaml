@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sastix-cms.fullname" . }}
+  labels:
+    app:  {{ template "sastix-cms.name" . }}
+    chart:  {{ template "sastix-cms.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{ if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+{{ end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "sastix-cms.name" . }}
+      release: "{{ .Release.Name }}"
+  template:
+    metadata:
+      labels:
+        app: {{ template "sastix-cms.name" . }}
+        chart:  {{ template "sastix-cms.chart" . }}
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+{{ if .Values.labels }}
+{{ toYaml .Values.labels | indent 8 }}
+{{ end }}
+    spec:
+      containers:
+      - name: {{ template "sastix-cms.fullname" . }}
+        image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        env:
+        - name: JAVA_EXTRA_ARGS
+          value: "-Dspring.profiles.active=production,kubernetes"
+        - name: SASTIX_CMS_MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Release.Name }}-mariadb
+              key: "mariadb-password"
+        - name: SASTIX_CMS_MYSQL_USERNAME
+          value: sastixcms
+        - name: SASTIX_CMS_MYSQL_URL
+          value: jdbc:mysql://{{ $.Release.Name }}-mariadb:3306/sastix_cms_docker
+        - name: SASTIX_CMS_VOLUME
+          value: /opt/sastixcms
+        - name: SASTIX_CMS_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "sastix-cms.fullname" . }}-secret
+              key: "user"
+        - name: SASTIX_CMS_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "sastix-cms.fullname" . }}-secret
+              key: "password"
+        ports:
+        - name: http
+          containerPort: 9082
+        volumeMounts:
+        - name: sastix-cms-data
+          mountPath: /opt/sastixcms
+        - name: config-volume
+          mountPath: /opt/csp/config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+{{ if .Values.resources }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+{{ end }}
+      restartPolicy: Always
+      serviceAccountName: {{ template "sastix-cms.serviceAccountName" . }}
+      volumes:
+      - name: sastix-cms-data
+        persistentVolumeClaim:
+          claimName: {{ template "sastix-cms.fullname" . }}-data
+      - name: config-volume
+        configMap:
+          name: {{ template "sastix-cms.fullname" . }}-config

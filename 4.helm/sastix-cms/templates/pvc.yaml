@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "sastix-cms.fullname" . }}-data
+  labels:
+    app: {{ template "sastix-cms.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{ if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+{{ end }}
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+{{ if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName }}
+{{ end }}

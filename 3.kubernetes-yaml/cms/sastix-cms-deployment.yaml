@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sastix-cms
+  labels:
+    app: sastix-cms
+    component: stastix-cms-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sastix-cms
+  template:
+    metadata:
+      labels:
+        app: sastix-cms
+        component: stastix-cms-app
+    spec:
+      containers:
+      - name: sastix-cms
+        env:
+        - name: JAVA_EXTRA_ARGS
+          value: "-Dspring.profiles.active=production,kubernetes"
+        - name: SASTIX_CMS_MYSQL_PASSWORD
+          value: sastixcms
+        - name: SASTIX_CMS_MYSQL_USERNAME
+          value: sastixcms
+        - name: SASTIX_CMS_MYSQL_URL
+          value: jdbc:mysql://db:3306/sastix_cms_docker
+        - name: SASTIX_CMS_VOLUME
+          value: /opt/sastixcms
+        image: buluba89/cms:latest
+        ports:
+        - name: http
+          containerPort: 9082
+        volumeMounts:
+        - name: sxcms-data
+          mountPath: /opt/sastixcms
+        - name: config-volume
+          mountPath: /opt/csp/config
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      restartPolicy: Always
+      volumes:
+      - name: sxcms-data
+        persistentVolumeClaim:
+          claimName: sxcms-data
+      - name: config-volume
+        configMap:
+          name: sastix-cms-config

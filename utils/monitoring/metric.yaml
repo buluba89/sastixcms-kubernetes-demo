@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    tier: backend
+  name: sastix-cms
+spec:
+  endpoints:
+    - basicAuth:
+        password:
+          name: basic-auth
+          key: password
+        username:
+          name: basic-auth
+          key: user
+      port: "http"
+      path: /prometheus
+      interval: 5s
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app: sastix-cms
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus1
+  labels:
+    prometheus: k8s
+spec:
+  serviceMonitorSelector:
+    matchLabels:
+      tier: backend
+  resources:
+    requests:
+      memory: 400Mi
+  enableAdminAPI: false
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+data:
+  password: cGFzc3dvcmQK #password
+  user: YWRtaW4= # admin
+type: Opaque

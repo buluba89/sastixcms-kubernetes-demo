@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ labels:
+   app: management-center
+ name: management-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: management-center
+  template:
+    metadata:
+      labels:
+        app: management-center
+    spec:
+      containers:
+      - name: hazelcast
+        image: hazelcast/management-center:3.11.1
+        ports:
+        - name: http
+          containerPort: 8080
+        volumeMounts:
+        - name: hazelcast-data
+          mountPath: /data
+
+      volumes:
+      - name: hazelcast-data
+        persistentVolumeClaim:
+          claimName: hazelcast-data

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sastix-cms.fullname" . }}
+  labels:
+    app:  {{ template "sastix-cms.name" . }}
+    chart:  {{ template "sastix-cms.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{ if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+{{ end }}
+spec:
+  ports:
+  - name: "http"
+    port: 80
+    targetPort: 9082
+  selector:
+    app: {{ template "sastix-cms.name" . }}
+    release: "{{ .Release.Name }}"

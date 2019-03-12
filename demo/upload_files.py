@@ -13,7 +13,7 @@ FILES = [
 ]
 
 
-def upload_file(data):
+def upload_file(data, url=False):
     req = dict()
     req['resourceAuthor'] = 'sastix'
     req['resourceBinary'] = data
@@ -37,10 +37,9 @@ def upload_all_files():
     urls = list()
     for file in FILES:
         if 'path' in file:
-            data = read_file(file['path'])
+            data = read_file(file['path']).decode('ascii')
         elif 'content' in file:
-            data = base64.b64encode(file['content'])
-        data = str(data)
+            data = base64.b64encode(file['content']).decode('ascii')
         for i in range(file['times']):
             uid = upload_file(data)
             urls.append('http://{}/cms/v1.0/getData/{}'.format(CMS_SERVER, uid))

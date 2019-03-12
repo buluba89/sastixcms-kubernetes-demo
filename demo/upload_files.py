@@ -39,7 +39,8 @@ def upload_all_files():
         if 'path' in file:
             data = read_file(file['path'])
         elif 'content' in file:
-            data = file['content']
+            data = base64.b64encode(file['content'])
+        data = str(data)
         for i in range(file['times']):
             uid = upload_file(data)
             urls.append('http://{}/cms/v1.0/getData/{}'.format(CMS_SERVER, uid))

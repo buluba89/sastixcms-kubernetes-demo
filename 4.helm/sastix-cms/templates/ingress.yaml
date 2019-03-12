@@ -20,6 +20,6 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: {{ template "sastix-cms.name" . }}
+          serviceName: {{ template "sastix-cms.fullname" . }}
           servicePort: http
 {{ end }}

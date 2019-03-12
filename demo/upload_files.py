@@ -5,11 +5,11 @@ import string
 import json
 import requests
 
-CMS_SERVER = 'a2c4e1691436f11e9a2310ab40e85427-1479423910.us-east-2.elb.amazonaws.com'
+CMS_SERVER = '10.152.183.241'
 
 FILES = [
-    #{'path': 'files/video1.mp4', 'times': 10},
-    {'content': b'test', 'times': 10},
+    {'path': 'files/video1.mp4', 'times': 10},
+    #{'content': b'test', 'times': 10},
 ]
 
 

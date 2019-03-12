@@ -1,6 +1,13 @@
 storage:
   storageClassName: efs
 
+ingress:
+  enabled: true
+
+autoscaling:
+  enabled: true
+
+
 mariadb:
   master:
     affinity:

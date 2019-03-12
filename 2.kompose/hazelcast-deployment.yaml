@@ -20,6 +20,8 @@ spec:
       containers:
       - image: hazelcast/hazelcast:3.11.2
         name: hazelcast
+        ports:
+        - containerPort: 5701
         resources: {}
       restartPolicy: Always
 status: {}

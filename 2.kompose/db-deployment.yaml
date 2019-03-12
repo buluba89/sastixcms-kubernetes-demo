@@ -28,6 +28,8 @@ spec:
           value: sastixcms
         image: mariadb:10
         name: db
+        ports:
+        - containerPort: 3306
         resources: {}
         volumeMounts:
         - mountPath: /var/lib/mysql

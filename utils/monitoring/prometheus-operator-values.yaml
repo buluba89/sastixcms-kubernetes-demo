@@ -1,10 +1,23 @@
 alertmanager:
   enabled: false
 
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelector:
+      matchExpressions:
+        - {key: release, operator: In, values: [monitoring, sastixcms]}
+
 grafana:
+  spring:
+    default:
+      spring-boot:
+        gnetId: 6756
+        datasource: Prometheus
   persistence:
     enabled: true
     initChownData: true
     accessModes:
       - ReadWriteOnce
     size: 5Gi
+
+createCustomResource: true

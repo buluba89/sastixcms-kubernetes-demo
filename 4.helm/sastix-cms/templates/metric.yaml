@@ -1,0 +1,34 @@
+{{ if $.Values.monitoring.operator | default false}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    tier: backend
+    app:  {{ template "sastix-cms.name" . }}
+    chart:  {{ template "sastix-cms.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  name: {{ template "sastix-cms.fullname" . }}-scv-monitor
+spec:
+  endpoints:
+    - basicAuth:
+        password:
+          name: {{ template "sastix-cms.fullname" . }}-secret
+          key: password
+        username:
+          name: {{ template "sastix-cms.fullname" . }}-secret
+          key: user
+      port: "http"
+      path: /prometheus
+      interval: 5s
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app: {{ template "sastix-cms.name" . }}
+      release: "{{ .Release.Name }}"
+
+---
+
+{{ end }}

@@ -10,11 +10,18 @@ services:
       SASTIX_CMS_MYSQL_URL: jdbc:mysql://db:3306/sastix_cms_docker
       SASTIX_CMS_MYSQL_USERNAME: sastixcms
       SASTIX_CMS_MYSQL_PASSWORD: sastixcms
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     volumes:
       - cms-data:/opt/sastixcms
     depends_on:
       - db
       - hazelcast
+    ports:
+      - "9082:9082"
 
   db:
     image: mariadb:10
@@ -26,9 +33,13 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - ${PWD}/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
 
   hazelcast:
     image: hazelcast/hazelcast:3.11.2
+    ports:
+      - "5701:5701"
 
 #  adminer:
 #    image: adminer

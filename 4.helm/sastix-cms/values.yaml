@@ -5,7 +5,6 @@ image:
 
 labels:
   component: sastix-cms-app
-  role: hazelcast
 
 storage:
   size: 500Mi
@@ -16,18 +15,20 @@ resources:
     cpu: "500m"
   limits:
     memory: "1024Mi"
-    cpu: "2000m"
+    cpu: "4000m"
 
 ingress:
-  enabled: true
+  enabled: false
   host: "cms.sastix.com"
 
 autoscaling:
   enabled: true
   minReplicas: 1
   maxReplicas: 3
+  targetCpuUtilization: 150
 
-  targetCpuUtilization: 100
+monitoring:
+  operator: true
 
 rbac:
   create: true

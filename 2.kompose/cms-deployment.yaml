@@ -32,7 +32,18 @@ spec:
         - name: SASTIX_CMS_VOLUME
           value: /opt/sastixcms
         image: buluba89/cms
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - -f
+            - http://localhost/health
+          failureThreshold: 3
+          periodSeconds: 90
+          timeoutSeconds: 10
         name: cms
+        ports:
+        - containerPort: 9082
         resources: {}
         volumeMounts:
         - mountPath: /opt/sastixcms
